@@ -5,9 +5,11 @@
         <li
           v-for="item in menuTab"
           :key="item.id"
-          :class="{'current': item.current}"
+          :class="{ current: item.current }"
           @click="toggleMenu(item)"
-        >{{item.txt}}</li>
+        >
+          {{ item.txt }}
+        </li>
       </ul>
       <!-- 表单开始 -->
       <el-form
@@ -32,7 +34,11 @@
             maxlength="20"
           ></el-input>
         </el-form-item>
-        <el-form-item prop="passwords" class="item-form" v-show="model === 'register'">
+        <el-form-item
+          prop="passwords"
+          class="item-form"
+          v-show="model === 'register'"
+        >
           <label>重复密码</label>
           <el-input
             type="text"
@@ -47,15 +53,31 @@
 
           <el-row :gutter="20">
             <el-col :span="15">
-              <el-input type="text" v-model="ruleForm.code" minlength="6" maxlength="6"></el-input>
+              <el-input
+                type="text"
+                v-model="ruleForm.code"
+                minlength="6"
+                maxlength="6"
+              ></el-input>
             </el-col>
             <el-col :span="9">
-              <el-button type="success" class="block">获取验证码</el-button>
+              <el-button
+                type="success"
+                class="block"
+                @click="getSms()"
+                :disabled="codeButtonStatus"
+                >获取验证码</el-button
+              >
             </el-col>
           </el-row>
         </el-form-item>
         <el-form-item>
-          <el-button type="primary" class="login-btn block" @click="submitForm('ruleForm')">提交</el-button>
+          <el-button
+            type="primary"
+            class="login-btn block"
+            @click="submitForm('ruleForm')"
+            >{{ model === "register" ? "注册" : "登录" }}</el-button
+          >
         </el-form-item>
       </el-form>
       <!-- 表单结束 -->
@@ -63,14 +85,57 @@
   </div>
 </template>
 <script>
+import { GetSms } from "@/api/login";
+import axios from "axios";
+// import service from "@/utils/request";
+import {
+  reactive,
+  ref,
+  isRef,
+  toRef,
+  toRefs,
+  onMounted,
+} from "@vue/composition-api";
 import {
   stripscript,
   validateEmail,
   validatePass,
-  validateVCode
+  validateVCode,
 } from "@/utils/validate";
 export default {
   name: "login",
+  //周期函数，加载调用,3.0 所有周期函数，方法，数据都放在这里边。
+  setup(props, context) {
+    //声明单一对象时使用
+    const menuTab = reactive([
+      { txt: "登录", current: true, type: "login" },
+      { txt: "注册", current: false, type: "register" },
+    ]);
+    //声明基本数据时使用
+    const model = ref("login");
+    console.log(menuTab);
+    console.log(model.value);
+    console.log(isRef(model) ? true : false);
+    //对象转基本类型
+    function type() {
+      const pos = reactive({
+        x: 1,
+        y: 3,
+      });
+      return toRefs(pos);
+    }
+    debugger;
+    const { x, y } = type();
+    console.log(x.value, y.value);
+
+    /**
+     * 周期函数
+     */
+    //挂在完成后
+    onMounted(() => {
+      GetSms();
+    });
+  },
   data() {
     var checkCode = (rule, value, callback) => {
       // let reg=/^[a-z0-9]{6}$/;
@@ -114,7 +179,7 @@ export default {
       }
     };
     var validatePasss = (rule, value, callback) => {
-        debugger
+      debugger;
       if (this.model === "login") {
         callback();
       }
@@ -129,39 +194,93 @@ export default {
       }
     };
     return {
+      //验证码按钮状态
+      codeButtonStatus: false,
       //登陆 注册标识
       model: "login",
       menuTab: [
         { txt: "登录", current: true, type: "login" },
-        { txt: "注册", current: false, type: "register" }
+        { txt: "注册", current: false, type: "register" },
       ],
       ruleForm: {
         username: "",
         password: "",
         code: "",
-        passwords: ""
+        passwords: "",
       },
       rules: {
         username: [{ validator: validateUsername, trigger: "blur" }],
         password: [{ validator: validatePass, trigger: "blur" }],
         code: [{ validator: checkCode, trigger: "blur" }],
-        passwords: [{ validator: validatePasss, trigger: "blur" }]
-      }
+        passwords: [{ validator: validatePasss, trigger: "blur" }],
+      },
     };
   },
-  created() {},
-  mounted() {},
   methods: {
     //数据驱动视图渲染
     toggleMenu(data) {
-      this.menuTab.forEach(element => {
+      this.menuTab.forEach((element) => {
         element.current = false;
       });
       data.current = true;
       this.model = data.type;
+      //重置表单
+      this.$refs[formName].resetFields();
     },
     submitForm(formName) {
-      this.$refs[formName].validate(valid => {
+      // 接口请求
+      axios
+        .get("/user?ID=12345")
+        .then(function(response) {
+          console.log(response);
+        })
+        .catch(function(error) {
+          console.log(error);
+        });
+      axios
+        .post("/user", {
+          a: "a",
+          b: "b",
+        })
+        .then(function(response) {
+          console.log(response);
+        })
+        .catch(function(error) {
+          console.log(error);
+        });
+      axios
+        .request({
+          method: "get",
+          url: "http://bt.ly/",
+          data: {
+            a: "a",
+            b: "b",
+          },
+        })
+        .then(function(response) {
+          console.log(response);
+        })
+        .catch(function(error) {
+          console.log(error);
+        });
+      //请求图片
+      axios({
+        method: "get",
+        url: "http://bt.ly/",
+        data: {
+          a: "a",
+          b: "b",
+        },
+        responseType: "stream",
+      })
+        .then(function(response) {
+          console.log(response);
+        })
+        .catch(function(error) {
+          console.log(error);
+        });
+
+      this.$refs[formName].validate((valid) => {
         if (valid) {
           alert("submit!");
         } else {
@@ -169,8 +288,20 @@ export default {
           return false;
         }
       });
-    }
-  }
+    },
+    //获取验证码
+    // setTimeout(() => {
+
+    // }, 5000),
+    getSms() {
+      let data = {
+        username: this.ruleForm.username,
+      };
+      //修改获取验证码的状态
+      this.codeButtonStatus = true;
+      GetSms(data);
+    },
+  },
 };
 </script>
 <style lang="scss" scoped>
