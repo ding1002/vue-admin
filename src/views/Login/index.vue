@@ -228,6 +228,19 @@ export default {
       this.$refs[formName].resetFields();
     },
     submitForm(formName) {
+       let data = {
+        username: this.ruleForm.username,
+      }
+      root.$store.dispatch('login',data).then(response =>{
+          console.log(response);
+
+          //页面跳转
+          root.$router.push({
+            name: 'Console'
+          })
+      }).catch(error => {
+
+      })
       // 接口请求
       axios
         .get("/user?ID=12345")

@@ -5,7 +5,7 @@
       default-active="1-4-1"
       class="el-menu-vertical-demo"
       :collapse="isCollapse"v-for=""
-      background-color="transparent"
+      background-color="transparent" 透明色
       text-color="#fff"
       active-text-color="#fff"
       router> -->
@@ -13,7 +13,7 @@
       default-active="1-4-1"
       class="el-menu-vertical-demo"
       :collapse="isCollapse"
-      background-color="transparent"
+      background-color="#344a5f"
       text-color="#fff"
       active-text-color="#fff"
       router
@@ -46,6 +46,7 @@ import {
   toRef,
   toRefs,
   onMounted,
+  computed,
 } from "@vue/composition-api";
 export default {
   name: "navMenu",
@@ -53,22 +54,30 @@ export default {
     /**
      * data 数据
      */
-    const isCollapse = ref(false); //控制菜单展示，展开或缩放
+    // const isCollapse = ref(false); //控制菜单展示，展开或缩放
     const routers = reactive(root.$router.options.routes);
     console.log(root.$router.options.routes);
     /**
+     * computed 监听
+     */
+    const isCollapse = computed(() => root.$store.state.app.isCollapse);
+    /**
      *  函数
      */
-    const handleOpen = (key, keyPath) => {
-      console.log(key, keyPath);
-    };
-    const handleClose = (key, keyPath) => {
-      console.log(key, keyPath);
-    };
+    // const handleOpen = (key, keyPath) => {
+    //   console.log(key, keyPath);
+    // };
+    // const handleClose = (key, keyPath) => {
+    //   console.log(key, keyPath);
+    // };
+    //打印store
+    root.$store.commit("SET_COUNT", 100);
+
+    console.log(root.$store.state.count);
+    console.log(root.$store.getters.count);
+
     return {
       isCollapse,
-      handleOpen,
-      handleClose,
       routers,
     };
   },
@@ -83,16 +92,40 @@ export default {
   left: 0;
   height: 100vh;
   background-color: #344a5f;
+  @include webkit(transition,all .3s ease 0s);
+  // -webkit-transition: all .3s ease 0s;
+  // -moz-transition: all .3s ease 0s;
+  // -o-transition: all .3s ease 0s;
+  // -ms-transition: all .3s ease 0s;
+  // transition: all .3s ease 0s;
   svg {
     font-size: 20px;
     margin-right: 10px;
+    fill: currentColor;
+    color: #fff;
   }
 }
 .logo {
   text-align: center;
   img {
     width: 92px;
-    margin: auto;
+    margin: 28px auto 25px;
+    // @include webkit(transition,all .3s ease 0s);
+  }
+}
+.open {
+  #nav-wrap {
+    width: $navMenu;
+  }
+}
+.close {
+  #nav-wrap {
+    width: 64px;
+    img{
+      // @include webkit(transition,all .3s ease 0s);
+      width: 40px;
+      height: 40px;
+    }
   }
 }
 </style>

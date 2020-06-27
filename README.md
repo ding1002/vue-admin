@@ -42,3 +42,5 @@ import 引入有无括号的区别
 ### 安装sha1 加密  npm i js-sha1
 
 ### 解析 icon  npm install svg-sprite-loader -S
+
+### 安装cookies  npm install cookie_js -save
